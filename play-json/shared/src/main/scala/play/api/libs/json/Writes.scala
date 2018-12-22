@@ -268,7 +268,22 @@ trait DefaultWrites extends LowPriorityWrites {
   implicit def mapWrites[V: Writes]: OWrites[Map[String, V]] = {
     val w = implicitly[Writes[V]]
 
-    OWrites[Map[String, V]] { ts => JsObject(ts.mapValues(w.writes(_)).toSeq) }
+    OWrites[Map[String, V]] { ts =>
+      JsObject(ts.map {
+        case (k, v) => k -> w.writes(v)
+      })
+    }
+  }
+
+  implicit def keyMapWrites[K: KeyWrites, V: Writes]: OWrites[Map[K, V]] = {
+    val kw = implicitly[KeyWrites[K]]
+    val vw = implicitly[Writes[V]]
+
+    OWrites[Map[K, V]] { ts =>
+      JsObject(ts.map {
+        case (k, v) => kw.writeKey(k) -> vw.writes(v)
+      })
+    }
   }
 
   /**
@@ -327,6 +342,7 @@ trait DefaultWrites extends LowPriorityWrites {
 }
 
 sealed trait LowPriorityWrites extends EnvWrites {
+
   /**
    * Serializer for Traversables types.
    */

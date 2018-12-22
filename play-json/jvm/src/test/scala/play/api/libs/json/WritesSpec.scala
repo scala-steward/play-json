@@ -4,6 +4,8 @@
 
 package play.api.libs.json
 
+import java.util.Locale
+
 import java.time.{
   Instant,
   Duration => JDuration,
@@ -286,6 +288,14 @@ class WritesSpec extends org.specs2.mutable.Specification {
         s"be written as ISO string '$repr'" in {
           Json.toJson(period) mustEqual JsString(repr)
         }
+    }
+  }
+
+  "Map" should {
+    "be successfully written with custom (locale) keys" in {
+      Json.toJson(
+        Map(Locale.ENGLISH -> 1, Locale.FRENCH -> 2)
+      ) must_== Json.obj("en" -> 1, "fr" -> 2)
     }
   }
 

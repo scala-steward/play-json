@@ -224,6 +224,7 @@ object Reads extends ConstraintReads with PathReads with DefaultReads with Gener
  * See https://github.com/playframework/playframework/issues/4313 for more details.
  */
 trait LowPriorityDefaultReads extends EnvReads {
+  implicit def keyMapReads[K: KeyReads, V](implicit fmtv: Reads[V]): Reads[Map[K, V]] = Reads.mapReads[K, V](implicitly[KeyReads[K]].readKey _)
 
   /**
    * Generic deserializer for collections types.
@@ -538,8 +539,6 @@ trait DefaultReads extends LowPriorityDefaultReads {
 
     case _ => JsError("error.expected.jsobject")
   }
-
-  implicit def keyMapReads[K: KeyReads, V](implicit fmtv: Reads[V]): Reads[Map[K, V]] = mapReads[K, V](implicitly[KeyReads[K]].readKey _)
 
   /** Deserializer for a `Map[String,V]` */
   implicit def mapReads[V](implicit fmtv: Reads[V]): Reads[Map[String, V]] =

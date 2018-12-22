@@ -1,9 +1,13 @@
+/*
+ * Copyright (C) 2009-2018 Lightbend Inc. <https://www.lightbend.com>
+ */
+
 package play.api.libs.json
 
 /**
  * Used to read object key for types other than `String`.
  *
- * @see [[Reads.mapReads]]
+ * @see [[Reads.keyMapReads]]
  */
 trait KeyReads[T] {
   def readKey(key: String): JsResult[T]
