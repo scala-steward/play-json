@@ -539,15 +539,7 @@ trait DefaultReads extends LowPriorityDefaultReads {
     case _ => JsError("error.expected.jsobject")
   }
 
-  /* TODO: Remove
-  def mapReads[K, V]()(implicit fmtv: Reads[V]): Reads[Map[K, V]] = Reads[Map[K, V]] {
-    case JsObject(fields) =>
-      mapObj[K, V](key, fields.toList, Map.newBuilder)
-
-    case _ => JsError(Seq(JsPath -> Seq(
-      JsonValidationError("error.expected.jsobject"))))
-  }
-   */
+  implicit def keyMapReads[K: KeyReads, V](implicit fmtv: Reads[V]): Reads[Map[K, V]] = mapReads[K, V](implicitly[KeyReads[K]].readKey _)
 
   /** Deserializer for a `Map[String,V]` */
   implicit def mapReads[V](implicit fmtv: Reads[V]): Reads[Map[String, V]] =
